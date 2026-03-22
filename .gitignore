@@ -1,5 +1,6 @@
 HELP.md
 target/
+backend/target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -35,6 +36,17 @@ build/
 ### Frontend generated files ###
 frontend/node_modules/
 frontend/build/
+
+### Dependency directories ###
+node_modules/
+
+### Environment files ###
+.env
+.env.*
+!.env.example
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
 
 ### Local logs ###
 *.log
