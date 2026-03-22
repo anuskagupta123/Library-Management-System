@@ -1,7 +1,14 @@
 import axios from "axios";
 import { getToken, isTokenExpired, logout } from "../utils/auth";
 
-const API_BASE_URL = (process.env.REACT_APP_API_BASE_URL || "http://localhost:8081/api").replace(/\/$/, "");
+const getDefaultApiBaseUrl = () => {
+  if (typeof window !== "undefined" && window.location.hostname === "localhost") {
+    return "http://localhost:8081/api";
+  }
+  return "/api";
+};
+
+const API_BASE_URL = (process.env.REACT_APP_API_BASE_URL || getDefaultApiBaseUrl()).replace(/\/$/, "");
 
 const api = axios.create({
   baseURL: API_BASE_URL
