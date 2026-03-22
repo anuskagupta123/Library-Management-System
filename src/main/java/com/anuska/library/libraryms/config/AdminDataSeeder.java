@@ -8,6 +8,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * AdminDataSeeder initializes demo admin accounts on application startup.
@@ -37,6 +38,16 @@ public class AdminDataSeeder implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         try {
+            initializeAdminAccounts();
+        } catch (Exception ex) {
+            logger.error("Error during admin data seeding - application will continue without admin accounts", ex);
+            // Don't rethrow - allow app to start even if seeding fails
+        }
+    }
+
+    @Transactional
+    private void initializeAdminAccounts() {
+        try {
             // Create primary demo admin account
             createAdminUserIfNotExists("admin", "admin123", "Primary Demo Admin Account");
             
@@ -54,9 +65,9 @@ public class AdminDataSeeder implements ApplicationRunner {
             logger.info("========================================");
             logger.info("NOTE: Change these credentials in production!");
             logger.info("========================================");
-            
         } catch (Exception ex) {
-            logger.error("Error during admin data seeding", ex);
+            logger.warn("Could not initialize demo admin accounts. App will continue without them.", ex);
+            throw ex;
         }
     }
 
@@ -68,17 +79,21 @@ public class AdminDataSeeder implements ApplicationRunner {
      * @param description a description of the account for logging
      */
     private void createAdminUserIfNotExists(String username, String password, String description) {
-        if (userRepository.findByUsername(username).isEmpty()) {
-            User adminUser = new User();
-            adminUser.setUsername(username);
-            adminUser.setPassword(passwordEncoder.encode(password));
-            adminUser.setRole("ADMIN");
-            adminUser.setEnabled(true);
-            
-            userRepository.save(adminUser);
-            logger.debug("Created admin user: {} ({})", username, description);
-        } else {
-            logger.debug("Admin user already exists: {}", username);
+        try {
+            if (userRepository.findByUsername(username).isEmpty()) {
+                User adminUser = new User();
+                adminUser.setUsername(username);
+                adminUser.setPassword(passwordEncoder.encode(password));
+                adminUser.setRole("ADMIN");
+                adminUser.setEnabled(true);
+                
+                userRepository.save(adminUser);
+                logger.debug("Created admin user: {} ({})", username, description);
+            } else {
+                logger.debug("Admin user already exists: {}", username);
+            }
+        } catch (Exception ex) {
+            logger.warn("Failed to create admin user '{}': {}", username, ex.getMessage());
         }
     }
 }

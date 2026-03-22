@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +34,16 @@ public class BookDataSeeder implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         try {
+            seedBooks();
+        } catch (Exception ex) {
+            logger.error("Error while seeding sample books - application will continue without books", ex);
+            // Don't rethrow - allow app to start even if seeding fails
+        }
+    }
+
+    @Transactional
+    private void seedBooks() {
+        try {
             long beforeCount = bookRepository.count();
             List<Book> missingBooks = new ArrayList<>();
             Set<String> existingIsbns = new HashSet<>(bookRepository.findAllIsbns());
@@ -58,7 +69,8 @@ public class BookDataSeeder implements ApplicationRunner {
                 logger.info("Book catalog already had all seeded entries. No changes needed.");
             }
         } catch (Exception ex) {
-            logger.error("Error while seeding sample books", ex);
+            logger.warn("Could not seed sample books. App will continue without them.", ex);
+            throw ex;
         }
     }
 
