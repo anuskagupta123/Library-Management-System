@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 
 import java.io.IOException;
 import java.util.List;
@@ -45,28 +46,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String token = authHeader.substring(7);
-        Claims claims = jwtUtil.extractAllClaims(token);
+        try {
+            String token = authHeader.substring(7);
+            Claims claims = jwtUtil.extractAllClaims(token);
 
-        String username = claims.getSubject();
-        String role = claims.get("role", String.class);
+            String username = claims.getSubject();
+            String role = claims.get("role", String.class);
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            UserDetails userDetails =
-                    userDetailsService.loadUserByUsername(username);
+                UserDetails userDetails =
+                        userDetailsService.loadUserByUsername(username);
 
-            SimpleGrantedAuthority authority =
-                    new SimpleGrantedAuthority("ROLE_" + role);
+                SimpleGrantedAuthority authority =
+                        new SimpleGrantedAuthority("ROLE_" + role);
 
-            UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            List.of(authority)
-                    );
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                List.of(authority)
+                        );
 
-            SecurityContextHolder.getContext().setAuthentication(authToken);
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            }
+        } catch (JwtException e) {
+            // Invalid or expired token - continue without authentication
+            // The request will be denied by Spring Security if the endpoint requires authentication
+        } catch (Exception e) {
+            // Other exceptions - also continue without authentication
         }
 
         filterChain.doFilter(request, response);

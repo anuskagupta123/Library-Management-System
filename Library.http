@@ -1,0 +1,100 @@
+### Library Management System - REST Client
+
+### Base URL
+@baseUrl = http://localhost:8080/api
+@token = 
+
+### ====== AUTH ENDPOINTS ======
+
+### Register a new user
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "testpass123"
+}
+
+### Login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "password"
+}
+
+### ====== BOOK ENDPOINTS ======
+
+### Get all books
+GET {{baseUrl}}/books
+Authorization: Bearer {{token}}
+
+### Get book by ID
+GET {{baseUrl}}/books/1
+Authorization: Bearer {{token}}
+
+### Search books by title
+GET {{baseUrl}}/books/search/title?title=Great
+Authorization: Bearer {{token}}
+
+### Search books by author
+GET {{baseUrl}}/books/search/author?author=Tolkien
+Authorization: Bearer {{token}}
+
+### Search book by ISBN
+GET {{baseUrl}}/books/search/isbn?isbn=9780547928227
+Authorization: Bearer {{token}}
+
+### Create a new book (Admin only)
+POST {{baseUrl}}/books
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "The Silmarillion",
+  "author": "J.R.R. Tolkien",
+  "isbn": "9780544003452",
+  "available": true
+}
+
+### Update a book (Admin only)
+PUT {{baseUrl}}/books/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "The Great Gatsby - Updated",
+  "author": "F. Scott Fitzgerald",
+  "isbn": "9780743273565"
+}
+
+### Borrow a book
+PUT {{baseUrl}}/books/1/borrow
+Authorization: Bearer {{token}}
+
+### Return a book
+PUT {{baseUrl}}/books/3/return
+Authorization: Bearer {{token}}
+
+### Calculate fine for overdue book
+GET {{baseUrl}}/books/5/fine
+Authorization: Bearer {{token}}
+
+### Delete a book (Admin only)
+DELETE {{baseUrl}}/books/10
+Authorization: Bearer {{token}}
+
+### ====== DASHBOARD ENDPOINTS ======
+
+### Get admin statistics
+GET {{baseUrl}}/dashboard/admin
+Authorization: Bearer {{token}}
+
+### Get my borrowed books
+GET {{baseUrl}}/dashboard/my-books
+Authorization: Bearer {{token}}
+
+### ====== SWAGGER UI ======
+# Access OpenAPI documentation at:
+# http://localhost:8080/swagger-ui.html

@@ -1,5 +1,6 @@
 package com.anuska.library.libraryms.service;
 
+import com.anuska.library.libraryms.exception.BadRequestException;
 import com.anuska.library.libraryms.dto.LoginRequest;
 import com.anuska.library.libraryms.dto.LoginResponse;
 import com.anuska.library.libraryms.model.User;
@@ -28,10 +29,10 @@ public class AuthService {
     public LoginResponse login(LoginRequest request) {
 
         User user = userRepository.findByUsername(request.getUsername())
-            .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new BadRequestException("Invalid username or password"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid password");
+            throw new BadRequestException("Invalid username or password");
         }
 
         String token = jwtUtil.generateToken(

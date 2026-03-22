@@ -31,3 +31,11 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Frontend generated files ###
+frontend/node_modules/
+frontend/build/
+
+### Local logs ###
+*.log
+frontend/*.log

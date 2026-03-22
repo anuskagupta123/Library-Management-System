@@ -1,0 +1,28 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Smooth font rendering */
+body {
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  background-color: #f5f7fb;
+  color: #1e293b;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Remove link underline globally */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Smooth transitions everywhere */
+button,
+a,
+.MuiButton-root {
+  transition: all 0.2s ease-in-out !important;
+}
