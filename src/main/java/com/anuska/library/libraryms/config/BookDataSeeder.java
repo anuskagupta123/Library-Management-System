@@ -10,7 +10,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Seeds sample books when the catalog is empty.
@@ -33,9 +35,10 @@ public class BookDataSeeder implements ApplicationRunner {
         try {
             long beforeCount = bookRepository.count();
             List<Book> missingBooks = new ArrayList<>();
+            Set<String> existingIsbns = new HashSet<>(bookRepository.findAllIsbns());
 
             for (Book book : sampleCatalog()) {
-                if (bookRepository.findByIsbn(book.getIsbn()).isEmpty()) {
+                if (!existingIsbns.contains(book.getIsbn())) {
                     missingBooks.add(book);
                 }
             }

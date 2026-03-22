@@ -25,5 +25,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     Optional<Book> findByIsbn(String isbn);
 
+    @Query("SELECT b.isbn FROM Book b")
+    List<String> findAllIsbns();
+
     List<Book> findByAvailableFalseAndDueDateBeforeOrderByDueDateAsc(LocalDateTime now);
 }
