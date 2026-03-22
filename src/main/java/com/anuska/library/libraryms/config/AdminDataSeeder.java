@@ -8,7 +8,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * AdminDataSeeder initializes demo admin accounts on application startup.
@@ -38,16 +37,6 @@ public class AdminDataSeeder implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         try {
-            initializeAdminAccounts();
-        } catch (Exception ex) {
-            logger.error("Error during admin data seeding - application will continue without admin accounts", ex);
-            // Don't rethrow - allow app to start even if seeding fails
-        }
-    }
-
-    @Transactional
-    private void initializeAdminAccounts() {
-        try {
             // Create primary demo admin account
             createAdminUserIfNotExists("admin", "admin123", "Primary Demo Admin Account");
             
@@ -66,8 +55,7 @@ public class AdminDataSeeder implements ApplicationRunner {
             logger.info("NOTE: Change these credentials in production!");
             logger.info("========================================");
         } catch (Exception ex) {
-            logger.warn("Could not initialize demo admin accounts. App will continue without them.", ex);
-            throw ex;
+            logger.error("Error during admin data seeding - application will continue without admin accounts", ex);
         }
     }
 
